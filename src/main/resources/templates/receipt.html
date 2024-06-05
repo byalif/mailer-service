@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Training Program Purchase Receipt</title>
+    <style>
+        /* Your CSS styles for the receipt go here */
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+        }
+        .container {
+            width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+        }
+        .logo-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .logo-container img {
+            width: 150px;
+            height: auto;
+        }
+        .receipt-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .receipt-details {
+            margin-bottom: 20px;
+        }
+        .product-list {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        .product-list th, .product-list td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        .product-list th {
+            background-color: #f2f2f2;
+        }
+        .mini-footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="logo-container">
+        <img src="https://img.freepik.com/premium-vector/pixel-art-gym-icon_735839-41.jpg?w=1380" alt="Logo">
+    </div>
+    <div class="receipt-header">
+        <h2>Training Program Purchase Receipt</h2>
+    </div>
+    <div class="receipt-details">
+        <p>Thank you for purchasing our training program. Below are the details of your purchase:</p>
+        <table class="product-list">
+            <thead>
+            <tr>
+                <th>Product Name</th>
+                <th>Quantity</th>
+                <th>Amount</th>
+                <th>Total</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!-- Loop through product details -->
+            <tr th:each="product : ${products}">
+                <td th:text="${product.productName}"></td>
+                <td th:text="${product.quantity}"></td>
+                <td th:text="${product.amount} + ' ' + ${product.currency}"></td>
+                <td th:text="${product.quantity * product.amount} + ' ' + ${product.currency}"></td>
+            </tr>
+            </tbody>
+        </table>
+        <p><strong>Email:</strong> <span th:text="${email}"></span></p>
+    </div>
+    <div class="mini-footer">&copy; 2024 Sousaesthetic. All rights reserved.</div>
+</div>
+</body>
+</html>
