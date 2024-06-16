@@ -10,15 +10,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.hc.core5.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.byalif.mailer.mailerapi.DTO.QuestionDTO;
+import com.byalif.mailer.mailerapi.DTO.ResponseDTO;
 import com.byalif.mailer.mailerapi.entity.ClientResults;
 import com.byalif.mailer.mailerapi.repository.ClientResultRepo;
 import com.byalif.mailer.mailerapi.repository.InquiryRepository;
+import com.byalif.mailer.mailerapi.service.EmailService;
 
 @RestController
 @RequestMapping("/inquiries")
@@ -30,6 +37,25 @@ public class InquiryController {
     
     @Autowired    
     private ClientResultRepo clientResultRepository;
+    
+    @Autowired
+    EmailService sendEmailService;
+    
+    @PostMapping("/newInquiry")
+    public ResponseEntity<ResponseDTO> sendEmail(@RequestBody QuestionDTO questionDTO) {
+        try {
+            // Process the email request here
+            // For example, call a service to send the email
+            sendEmailService.sendEmailAsync(questionDTO);
+
+            // Return a success response
+            return ResponseEntity.ok().body(new ResponseDTO("Email sent successfully to: " + questionDTO.getEmail()));
+        } catch (Exception e) {
+            // Handle exception and log error
+//            log.error("Failed to send email", e);
+            return ResponseEntity.ok().body(new ResponseDTO("Email did not send successfully to: " + questionDTO.getEmail()));
+        }
+    }
 
     @GetMapping("/allResultsGroupedByInquiryId")
     public List<Map<String, Object>> getAllResultsGroupedByInquiryId() {
