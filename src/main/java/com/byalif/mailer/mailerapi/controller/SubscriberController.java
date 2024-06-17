@@ -21,7 +21,7 @@ import com.byalif.mailer.mailerapi.repository.SubscriberRepository;
 
 
 @RestController
-@RequestMapping("/subscriber")
+@RequestMapping("/mail/subscriber")
 public class SubscriberController {
 
     private static final Logger logger = LoggerFactory.getLogger(SubscriberController.class);

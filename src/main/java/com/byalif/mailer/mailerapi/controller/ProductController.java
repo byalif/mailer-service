@@ -20,7 +20,7 @@ import com.byalif.mailer.mailerapi.entity.ProductDetails;
 import com.byalif.mailer.mailerapi.repository.ProductDetailsRepo;
 
 @RestController
-@RequestMapping("/products")
+@RequestMapping("/mail/products")
 public class ProductController {
 
 	@Autowired
