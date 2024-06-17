@@ -29,7 +29,6 @@ import com.byalif.mailer.mailerapi.service.EmailService;
 
 @RestController
 @RequestMapping("/inquiries")
-@CrossOrigin(origins = "http://localhost:3000")
 public class InquiryController {
 
     @Autowired

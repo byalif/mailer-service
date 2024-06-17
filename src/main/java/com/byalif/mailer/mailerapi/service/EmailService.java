@@ -1,10 +1,10 @@
 package com.byalif.mailer.mailerapi.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.kafka.clients.producer.ProducerRecord;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -14,13 +14,11 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import com.byalif.mailer.mailerapi.DTO.EmailDTO;
-import com.byalif.mailer.mailerapi.DTO.ProductDetailsDTO;
 import com.byalif.mailer.mailerapi.DTO.QuestionDTO;
 import com.byalif.mailer.mailerapi.entity.ClientResults;
 import com.byalif.mailer.mailerapi.entity.Inquiry;
 import com.byalif.mailer.mailerapi.entity.ProductDetails;
 import com.byalif.mailer.mailerapi.entity.Receipt;
-import com.byalif.mailer.mailerapi.entity.Subscriber;
 import com.byalif.mailer.mailerapi.repository.InquiryRepository;
 import com.byalif.mailer.mailerapi.repository.ProductDetailsRepo;
 import com.byalif.mailer.mailerapi.repository.ReceiptRepository;
@@ -37,6 +35,9 @@ public class EmailService {
 	
 	@Autowired
 	ProductDetailsRepo productRepository;
+	
+	final static Logger log = LoggerFactory.getLogger(KafkaConsumer.class);
+	
 	
 	@Autowired
 	ReceiptRepository receiptRepository;
@@ -116,6 +117,11 @@ public class EmailService {
 			helper.setText(text, true);
 			
 			emailSender.send(message);
+	        
+	        Inquiry inquiry = saveInquiryToDB(questionDTO);
+	        
+	        log.info(String.format("Inquiry id: ", inquiry.getId()));
+	        
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
