@@ -21,7 +21,6 @@ import com.byalif.mailer.mailerapi.repository.ProductDetailsRepo;
 
 @RestController
 @RequestMapping("/products")
-@CrossOrigin(origins = "http://localhost:3000")
 public class ProductController {
 
 	@Autowired
