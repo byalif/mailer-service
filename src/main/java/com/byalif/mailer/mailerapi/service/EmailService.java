@@ -117,11 +117,7 @@ public class EmailService {
 			helper.setText(text, true);
 			
 			emailSender.send(message);
-	        
-	        Inquiry inquiry = saveInquiryToDB(questionDTO);
-	        
-	        log.info(String.format("Inquiry id: ", inquiry.getId()));
-	        
+
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

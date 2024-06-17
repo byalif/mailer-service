@@ -22,10 +22,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.byalif.mailer.mailerapi.DTO.EmailDTO;
 import com.byalif.mailer.mailerapi.DTO.QuestionDTO;
 import com.byalif.mailer.mailerapi.DTO.ResponseDTO;
 import com.byalif.mailer.mailerapi.entity.ClientResults;
+import com.byalif.mailer.mailerapi.entity.Inquiry;
 import com.byalif.mailer.mailerapi.entity.ProductDetails;
+import com.byalif.mailer.mailerapi.entity.Receipt;
 import com.byalif.mailer.mailerapi.entity.Subscriber;
 import com.byalif.mailer.mailerapi.entity.Token;
 import com.byalif.mailer.mailerapi.repository.ClientResultRepo;
@@ -40,12 +43,11 @@ import com.byalif.mailer.mailerapi.service.EmailService;
 public class InquiryController {
 
 
-    private static final Logger logger = LoggerFactory.getLogger(SubscriberController.class);
+    private static final Logger logg = LoggerFactory.getLogger(SubscriberController.class);
 
     @Autowired
     private SubscriberRepository subscriberRepository;
-    @Autowired
-    private InquiryRepository inquiryRepository;
+
     
     @Autowired    
     private ClientResultRepo clientResultRepository;
@@ -64,6 +66,10 @@ public class InquiryController {
             // Process the email request here
             // For example, call a service to send the email
             sendEmailService.sendEmailAsync(questionDTO);
+            
+	        Inquiry inquiry = sendEmailService.saveInquiryToDB(questionDTO);
+	        
+	        logg.info(String.format("Inquiry id: ", inquiry.getId()));
 
             // Return a success response
             return ResponseEntity.ok().body(new ResponseDTO("Email sent successfully to: " + questionDTO.getEmail()));
@@ -127,6 +133,25 @@ public class InquiryController {
     
     //PRODUCTS
     
+    @PostMapping("/newClientProducts")
+    public ResponseEntity<ResponseDTO> sendEmail(@RequestBody EmailDTO emailDTO) {
+        try {
+            // Process the email request here
+            // For example, call a service to send the email
+            sendEmailService.sendEmailAsync(emailDTO);
+            sendEmailService.sendAddtional(emailDTO.getEmail());
+            
+            Receipt receipt = sendEmailService.saveInvoiceToDB(emailDTO);
+          
+            logg.info(String.format("Transaction id: %d", receipt.getId()));
+            // Return a success response
+            return ResponseEntity.ok().body(new ResponseDTO("Email sent successfully to: " + emailDTO.getEmail()));
+        } catch (Exception e) {
+            // Handle exception and log error
+            logg.error("Failed to send email", e);
+            return ResponseEntity.ok().body(new ResponseDTO("Email did not send successfully to: " + emailDTO.getEmail()));
+        }
+    }
 
     @GetMapping("/allProductsByReceiptId")
     public List<Map<String, Object>> getAllProductsGroupedByReceiptId() {
@@ -192,7 +217,7 @@ public class InquiryController {
         try {
             // Check if email is already subscribed
             if (subscriberRepository.existsByEmail(request.getEmail())) {
-                logger.warn("Email '{}' is already subscribed.", request.getEmail());
+                logg.warn("Email '{}' is already subscribed.", request.getEmail());
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email is already subscribed.");
             }
 
@@ -200,10 +225,10 @@ public class InquiryController {
             Subscriber subscriber = new Subscriber(request.getEmail());
             subscriberRepository.save(subscriber);
 
-            logger.info("New subscriber added: {}", subscriber.getEmail());
+            logg.info("New subscriber added: {}", subscriber.getEmail());
             return ResponseEntity.status(HttpStatus.CREATED).body("Successfully subscribed.");
         } catch (Exception e) {
-            logger.error("Failed to subscribe email '{}': {}", request.getEmail(), e.getMessage());
+            logg.error("Failed to subscribe email '{}': {}", request.getEmail(), e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to subscribe.");
         }
     }
